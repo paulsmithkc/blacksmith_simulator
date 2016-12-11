@@ -1,0 +1,86 @@
+
+body {
+    background: black;
+    color: white;
+    fount: 12pt courier-new;
+}
+
+.game div {
+    border: 1px solid grey;
+    border-radius: 0.5em;
+    padding: 0.5em;
+    margin: 0.5em 0;
+}
+.game div.title {
+    display: block;
+    border: none;
+    font-weight: bold;
+    font-size: 1.2em;
+    margin: 0;
+}
+.game div.item, .game .item {
+    display: inline-block;
+    border: 2px solid white;
+    border-radius: 0.5em;
+    padding: 0.5em;
+    margin: 0.25em;
+    text-align: center;
+}
+.game div.recipe {
+    display: block;
+    border: 2px solid white;
+    border-radius: 0.5em;
+    vertical-align: middle;
+}
+.game div.recipe .recipe-components {
+    display: inline-block;
+    border: none;
+}
+.game div.recipe .recipe-result {
+    display: inline-block;
+    border: none;
+}
+
+.game div.vertical-column {
+    display: inline-block; 
+    border: none; 
+    margin: 0; 
+    padding: 0;
+    vertical-align: top; 
+}
+.game div.game-inventory,
+.game div.game-recipes,
+.game div.game-recipe-queue {
+    display: block;
+    border: none;
+    padding: 0;
+    margin: 0;
+}
+
+
+
+
+/*
+#debug {
+    border: 1px solid white;
+    padding: 0.5em;
+}
+
+.item-list {
+    border: 1px solid white;
+    margin: 0.5em;
+}
+.item-list .item-list-item {
+    border: 1px solid white;
+    margin: 0.5em;
+}
+
+.recipe-list {
+    border: 1px solid white;
+    margin: 0.5em;
+}
+.recipe-list .recipe-list-item {
+    border: 1px solid white;
+    margin: 0.5em;
+}
+*/

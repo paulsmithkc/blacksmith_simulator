@@ -9,10 +9,48 @@
 </head>
 <body>
 
+    <div class="game">
+        <div style="border: none;">
+            <div class="vertical-column" style="width: 300px;">
+                <div class="title">Inventory</div>
+                <div class="game-inventory"></div>
+            </div>
+            <div class="vertical-column" style="width: 500px;">
+                <div class="title">Recipes</div>
+                <div class="game-recipes"></div>
+            </div>
+            <div class="vertical-column" style="width: 300px;">
+                <div class="title">Queue</div>
+                <div class="game-recipe-queue"></div>
+            </div>
+        </div>
+        <div style="border: none;">
+            <div class="title">Parties</div>
+            <div class="game-parties"></div>
+        </div>
+    </div>
 
-
+    <!--
+    <div id="debug">
+        Debug Item List
+        <div id="debug-item-list">
+        </div>
+        Debug Recipe List
+        <div id="debug-recipe-list">
+        </div>
+    </div>
+    -->
+    
     <script src="jquery/jquery-3.1.1.js"></script>
     <script src="jquery-ui-1.12.1/jquery-ui.js"></script>
+    <script src="item_list.js"></script>
+    <script src="recipe_list.js"></script>
+    <script src="game.js"></script>
+    <script>
+        newGame($('.game'));
+        //$('#debug-item-list').html(displayItemList());
+        //$('#debug-recipe-list').html(displayRecipeList());
+    </script>
 
 </body>
 </html>

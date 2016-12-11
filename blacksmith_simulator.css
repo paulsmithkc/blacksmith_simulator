@@ -2,14 +2,14 @@
 body {
     background: black;
     color: white;
-    fount: 12pt courier-new;
+    font: 12pt Arial;
 }
 
 .game div {
     border: 1px solid grey;
     border-radius: 0.5em;
     padding: 0.5em;
-    margin: 0.5em 0;
+    margin: 0;
 }
 .game div.title {
     display: block;
@@ -25,22 +25,50 @@ body {
     padding: 0.5em;
     margin: 0.25em;
     text-align: center;
+    
+    -webkit-touch-callout: none; /* iOS Safari */
+      -webkit-user-select: none; /* Chrome/Safari/Opera */
+       -khtml-user-select: none; /* Konqueror */
+         -moz-user-select: none; /* Firefox */
+          -ms-user-select: none; /* Internet Explorer/Edge */
+              user-select: none;
 }
-.game div.recipe {
+.game div.recipe,
+.game div.recipe-queue-item {
     display: block;
     border: 2px solid white;
     border-radius: 0.5em;
     vertical-align: middle;
+    padding: 0.5em;
+    margin: 0.5em 0;
+    
+    -webkit-touch-callout: none; /* iOS Safari */
+      -webkit-user-select: none; /* Chrome/Safari/Opera */
+       -khtml-user-select: none; /* Konqueror */
+         -moz-user-select: none; /* Firefox */
+          -ms-user-select: none; /* Internet Explorer/Edge */
+              user-select: none;
 }
-.game div.recipe .recipe-components {
-    display: inline-block;
-    border: none;
-}
-.game div.recipe .recipe-result {
-    display: inline-block;
-    border: none;
+.game div.recipe.recipe-disabled {
+    border-color: gray;
+    background: gray;
 }
 
+.game div.game-currency {
+    display: block;
+    position: absolute;
+    top: 0;
+    right: 0;
+    border: 1px solid grey;
+    border-radius: 0;
+    border-bottom-left-radius: 0.5em;
+    border-top: none;
+    border-right: none;
+    padding: 0.5em;
+    margin: 0;
+    font-weight: bold;
+    font-size: 1.2em;
+}
 .game div.vertical-column {
     display: inline-block; 
     border: none; 

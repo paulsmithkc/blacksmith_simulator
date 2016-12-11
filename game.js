@@ -16,9 +16,24 @@ function newGame(div) {
         }
     });
     
+    refreshUI();
+}
+
+function refreshUI() {
+    var div = g_game.div;
+    div.find('.game-currency').html(displayCurrency());
     div.find('.game-inventory').html(displayInventory());
     div.find('.game-recipes').html(displayRecipeList());
     div.find('.game-recipe-queue').html(displayRecipeQueue());
+}
+
+function hasItemsInInventory(name, quantity) {
+    var i = g_game.inventory[name];
+    if (i == null) {
+        return 0 >= quantity;
+    } else {
+        return i.quantity >= quantity;
+    }
 }
 
 function addItemsToInventory(name, quantity) {
@@ -32,16 +47,24 @@ function addItemsToInventory(name, quantity) {
 
 function queueRecipe(recipeListIndex) {
     var recipe = g_recipes[recipeListIndex];
+    var haveComponents = true;
     
-    if (recipe.component1Quantity > 0) {
-        addItemsToInventory(recipe.component1Name, -recipe.component1Quantity);
+    $.each(recipe.components, function (componentIndex, component) {
+        if (component.quantity > 0) {
+            haveComponents &= hasItemsInInventory(component.name, component.quantity);
+        }
+    });
+    
+    if (!haveComponents) {
+        //alert("Need more components");
+        return;
     }
-    if (recipe.component2Quantity > 0) {
-        addItemsToInventory(recipe.component2Name, -recipe.component2Quantity);
-    }
-    if (recipe.component3Quantity > 0) {
-        addItemsToInventory(recipe.component3Name, -recipe.component3Quantity);
-    }
+    
+    $.each(recipe.components, function (componentIndex, component) {
+        if (component.quantity > 0) {
+            addItemsToInventory(component.name, -component.quantity);
+        }
+    });
     
     g_game.recipeQueue.push({
         recipeListIndex: recipeListIndex,
@@ -50,28 +73,26 @@ function queueRecipe(recipeListIndex) {
         duration: recipe.duration
     });
     
-    g_game.div.find('.game-inventory').html(displayInventory());
-    g_game.div.find('.game-recipe-queue').html(displayRecipeQueue());
+    refreshUI();
 }
 
 function cancelRecipe(recipeQueueIndex) {
     var item = g_game.recipeQueue[recipeQueueIndex];
     var recipe = g_recipes[item.recipeListIndex];
     
-    if (recipe.component1Quantity > 0) {
-        addItemsToInventory(recipe.component1Name, recipe.component1Quantity);
-    }
-    if (recipe.component2Quantity > 0) {
-        addItemsToInventory(recipe.component2Name, recipe.component2Quantity);
-    }
-    if (recipe.component3Quantity > 0) {
-        addItemsToInventory(recipe.component3Name, recipe.component3Quantity);
-    }
+    $.each(recipe.components, function (componentIndex, component) {
+        if (component.quantity > 0) {
+            addItemsToInventory(component.name, component.quantity);
+        }
+    });
     
     g_game.recipeQueue.splice(recipeQueueIndex, 1);
     
-    g_game.div.find('.game-inventory').html(displayInventory());
-    g_game.div.find('.game-recipe-queue').html(displayRecipeQueue());
+    refreshUI();
+}
+
+function displayCurrency() {
+    return `${g_game.currency} gp`;
 }
 
 function displayInventory() {
@@ -105,39 +126,43 @@ function displayRecipeQueue() {
 }
 
 function displayRecipeList() {
-    var html = '<div class="recipe-list">';
+    var enabledRecipes = '';
+    var disabledRecipes = '';
     
-    $.each(g_recipes, function (i, recipe) {
+    $.each(g_recipes, function (recipeListIndex, recipe) {
         var recipeComponentsHtml = '';
-        if (recipe.component1Quantity > 0) {
-            recipeComponentsHtml += `<span class="recipe-component item">
-                ${recipe.component1Name} : ${recipe.component1Quantity}
-            </span>`;
-        }
-        if (recipe.component2Quantity > 0) {
-            recipeComponentsHtml += `<span class="recipe-component item">
-                ${recipe.component2Name} : ${recipe.component2Quantity}
-            </span>`;
-        }
-        if (recipe.component3Quantity > 0) {
-            recipeComponentsHtml += `<span class="recipe-component item">
-                ${recipe.component3Name} : ${recipe.component3Quantity}
-            </span>`;
-        }
+        var haveComponents = true;
+        
+        $.each(recipe.components, function (componentIndex, component) {
+            if (component.quantity > 0) {
+                recipeComponentsHtml += `<span class="recipe-component item">
+                    ${component.name} : ${component.quantity}
+                </span>`
+                haveComponents &= hasItemsInInventory(component.name, component.quantity);
+            }
+        });
         
         var recipeResultHtml = `<span class="item">
             ${recipe.resultName} : ${recipe.resultQuantity}
         </span>`;
         
-        html += `<div class="recipe" onclick="queueRecipe(${i});">
+        var recipeHtml = 
+        `<div class="recipe ${haveComponents ? 'recipe-enabled' : 'recipe-disabled'}" 
+              onclick="queueRecipe(${recipeListIndex});">
             <span class="recipe-components">${recipeComponentsHtml}</span>
             <i class="fa fa-chevron-circle-right" aria-hidden="true"></i>
             <span class="recipe-result">${recipeResultHtml}</span>
-            <i class="fa fa-clock-o" aria-hidden="true"></i>${recipe.duration}
+            <i class="fa fa-clock-o" aria-hidden="true"></i>
+            ${recipe.duration}
         </div>`;
+        if (haveComponents) {
+            enabledRecipes += recipeHtml;
+        } else {
+           disabledRecipes += recipeHtml; 
+        }
     });
     
-    html += '</div>';
+    var html = `<div class="recipe-list">${enabledRecipes}${disabledRecipes}</div>`;
     return html;
 }
 

@@ -16,6 +16,44 @@ function newGame(div) {
         }
     });
     
+    var availableNames = g_adventurer_names.slice();
+    for (var i = 0; i < 3; ++i) {
+        var party = {
+            adventurers: [],
+            loot: {}
+        };
+        var party_classes = [
+            { name: 'Fighter', weapon: 'Iron Sword' }, 
+            { name: 'Rouge', weapon: 'Iron Sword' }, 
+            { name: 'Ranger', weapon: 'Bow' }, 
+            { name: 'Wizard', weapon: 'Staff' }, 
+        ];
+        for (var j = 0; j < party_classes.length; ++j) {
+            var nameIndex = Math.floor(Math.random() * availableNames.length);
+            var nameObj = availableNames[nameIndex];
+            availableNames.splice(nameIndex, 1);
+            
+            party.adventurers.push({
+                name: nameObj.name,
+                icon: nameObj.icon,
+                cls: party_classes[j].name,
+                level: 1,
+                dead: false,
+                health: 10,
+                helmet: null,
+                breastplate: null,
+                clothing: null,
+                weapon: party_classes[j].weapon,
+                potions: {
+                    'Health Potion': 1
+                },
+                arrows: party_classes[j].name == 'Ranger' ? 10 : 0
+                
+            });
+        }
+        g_game.parties.push(party);
+    }
+    
     refreshUI();
 }
 
@@ -25,6 +63,7 @@ function refreshUI() {
     div.find('.game-inventory').html(displayInventory());
     div.find('.game-recipes').html(displayRecipeList());
     div.find('.game-recipe-queue').html(displayRecipeQueue());
+    div.find('.game-parties').html(displayParties());
 }
 
 function hasItemsInInventory(name, quantity) {
@@ -114,10 +153,10 @@ function displayRecipeQueue() {
     var html = '<div class="recipe-queue">';
     
     $.each(g_game.recipeQueue, function (i, e) {
-        html += `<div class="recipe-queue-item" onclick="cancelRecipe(${i});">
+        html += `<div class="recipe-queue-item" onclick="cancelRecipe(${i});" tabindex="0">
             <span class="item">${e.name} : ${e.quantity}</span> 
             <i class="fa fa-clock-o" aria-hidden="true"></i> 
-            ${e.duration}
+            ${e.duration} days
         </div>`;
     });
     
@@ -135,25 +174,27 @@ function displayRecipeList() {
         
         $.each(recipe.components, function (componentIndex, component) {
             if (component.quantity > 0) {
-                recipeComponentsHtml += `<span class="recipe-component item">
+                recipeComponentsHtml += 
+                `<span class="recipe-component item">
                     ${component.name} : ${component.quantity}
                 </span>`
                 haveComponents &= hasItemsInInventory(component.name, component.quantity);
             }
         });
         
-        var recipeResultHtml = `<span class="item">
+        var recipeResultHtml = 
+        `<span class="item">
             ${recipe.resultName} : ${recipe.resultQuantity}
         </span>`;
         
         var recipeHtml = 
         `<div class="recipe ${haveComponents ? 'recipe-enabled' : 'recipe-disabled'}" 
-              onclick="queueRecipe(${recipeListIndex});">
+              onclick="queueRecipe(${recipeListIndex});" tabindex="0">
             <span class="recipe-components">${recipeComponentsHtml}</span>
             <i class="fa fa-chevron-circle-right" aria-hidden="true"></i>
             <span class="recipe-result">${recipeResultHtml}</span>
             <i class="fa fa-clock-o" aria-hidden="true"></i>
-            ${recipe.duration}
+            ${recipe.duration} days
         </div>`;
         if (haveComponents) {
             enabledRecipes += recipeHtml;
@@ -162,16 +203,60 @@ function displayRecipeList() {
         }
     });
     
-    var html = `<div class="recipe-list">${enabledRecipes}${disabledRecipes}</div>`;
+    var html = `${enabledRecipes}${disabledRecipes}`;
     return html;
 }
 
+function displayParties() {
+    var html = '';
+    
+    $.each(g_game.parties, function (partyIndex, party) {
+        html += '<div class="party">';
+        html += '<div class="party-members">';
+        $.each(party.adventurers, function (memberIndex, a) {
+            html += '<span class="party-member adventurer">';
+            html += `${a.name} the ${a.cls}`;
+            if (a.weapon != null) {
+                html += `<br/><span class="weapon item">${a.weapon}</span>`;
+            }
+            if (a.helmet != null) {
+                html += `<br/><span class="helmet item">${a.helmet}</span>`;
+            }
+            if (a.breastplate != null) {
+                html += `<br/><span class="breastplate item">${a.breastplate}</span>`;
+            }
+            if (a.clothing != null) {
+                html += `<br/><span class="clothing item">${a.clothing}</span>`;
+            }
+            $.each(a.potions, function (potionName, potionQuantity)  {
+                html += `<br/><span class="potion item">${potionName} : ${potionQuantity}</span>`;
+            });
+            if (a.arrows != 0) {
+                html += `<br/><span class="arrow item">Arrow : ${a.arrows}</span>`;
+            }
+            html += '</span>';
+        });
+        html += '</div><div class="party-loot">';
+        $.each(party.loot, function (itemName, item) {
+            if (item.quantity != 0) {
+                html += 
+                `<span class="party-loot-item item">
+                    ${itemName} : ${item.quantity}
+                </span>`;
+            }
+        });
+        html += '</div></div>';
+    });
+    
+    return html;
+}
 
 function displayItemList() {
     var html = '<div class="item-list">';
     
     $.each(g_items, function (name, e) {
-        html += `<div class="item-list-item item">
+        html += 
+        `<div class="item-list-item item">
             name: ${name}
             <br/>type: ${e.type}
             <br/>material: ${e.material}

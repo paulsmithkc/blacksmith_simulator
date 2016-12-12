@@ -1,6 +1,6 @@
 var g_recipes = [
     {
-        duration: 1,
+        duration: 0.1,
         resultName: "Leather",
         resultQuantity: 10,
         components: [
@@ -9,7 +9,7 @@ var g_recipes = [
         ]
     },
     {
-        duration: 1,
+        duration: 0.1,
         resultName: "Iron Ingot",
         resultQuantity: 10,
         components: [
@@ -18,7 +18,7 @@ var g_recipes = [
         ]
     },
     {
-        duration: 1,
+        duration: 0.1,
         resultName: "Steel Ingot",
         resultQuantity: 10,
         components: [

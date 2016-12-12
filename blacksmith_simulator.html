@@ -11,7 +11,12 @@
 
     <div class="game">
         <div style="border: none;">
-            <div class="game-currency"></div>
+            <span class="game-sleep">Next Day</span>
+            <span class="game-currency"></span>
+        </div>
+        <div style="border: none;">
+            <div class="title">Parties</div>
+            <div class="game-parties"></div>
         </div>
         <div style="border: none;">
             <div class="vertical-column" style="width: 300px;">
@@ -26,10 +31,6 @@
                 <div class="title">Queue</div>
                 <div class="game-recipe-queue"></div>
             </div>
-        </div>
-        <div style="border: none;">
-            <div class="title">Parties</div>
-            <div class="game-parties"></div>
         </div>
     </div>
 
@@ -48,6 +49,7 @@
     <script src="jquery-ui-1.12.1/jquery-ui.js"></script>
     <script src="item_list.js"></script>
     <script src="recipe_list.js"></script>
+    <script src="adventurer_list.js"></script>
     <script src="game.js"></script>
     <script>
         newGame($('.game'));

@@ -56,6 +56,22 @@ body {
     background: gray;
     cursor: default;
 }
+
+.game .party {
+    display: block;
+    border: 2px solid white;
+    border-radius: 0.5em;
+    padding: 0.5em;
+    margin: 0;
+    margin-bottom: 0.5em;
+}
+.game .party .party-members,
+.game .party .party-loot {
+    border: none;
+    padding: 0;
+    margin: 0;
+    margin-bottom: 1em;
+}
 .game .adventurer {
     display: inline-block;
     border: 2px solid white;

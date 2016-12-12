@@ -14,6 +14,15 @@ var g_items = {
     "Cloth" : {
         type: "Resource"
     },
+    "Used Armor" : {
+        type: "Resource"
+    },
+    "Used Clothing" : {
+        type: "Resource"
+    },
+    "Rusty Weapon" : {
+        type: "Resource"
+    },
     "Wood" : {
         type: "Resource"
     },

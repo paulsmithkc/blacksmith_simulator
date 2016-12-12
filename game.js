@@ -1,6 +1,10 @@
 
 var g_game = null;
 
+function randomInt(min, max) {
+    return min + Math.floor(Math.random() * (max - min));
+}
+
 function newGame(div) {
     g_game = {
         currency: 100,
@@ -12,7 +16,7 @@ function newGame(div) {
     
     $.each(g_items, function (name, e) {
         if (e.type == 'Resource') {
-            addItemsToInventory(name, 10);
+            addItemsToInventory(name, 20);
         }
     });
     
@@ -29,7 +33,7 @@ function newGame(div) {
             { name: 'Wizard', weapon: 'Staff' }, 
         ];
         for (var j = 0; j < party_classes.length; ++j) {
-            var nameIndex = Math.floor(Math.random() * availableNames.length);
+            var nameIndex = randomInt(0, availableNames.length);
             var nameObj = availableNames[nameIndex];
             availableNames.splice(nameIndex, 1);
             
@@ -54,7 +58,8 @@ function newGame(div) {
         g_game.parties.push(party);
     }
     
-    refreshUI();
+    sleep();
+    //refreshUI();
 }
 
 function refreshUI() {
@@ -79,6 +84,15 @@ function addItemsToInventory(name, quantity) {
     var i = g_game.inventory[name];
     if (i == null) {
         g_game.inventory[name] = { quantity: quantity };
+    } else {
+        i.quantity += quantity;
+    }
+}
+
+function addItemsToPartyLoot(party, name, quantity) {
+    var i = party.loot[name];
+    if (i == null) {
+        party.loot[name] = { quantity: quantity };
     } else {
         i.quantity += quantity;
     }
@@ -130,6 +144,36 @@ function cancelRecipe(recipeQueueIndex) {
     refreshUI();
 }
 
+function sleep() {
+    
+    // Work on recipes in queue
+    var hoursRemaining = 8;
+    while (g_game.recipeQueue.length > 0 && hoursRemaining > 0) {
+        var item = g_game.recipeQueue[0];
+        if (item.duration > hoursRemaining) {
+            item.duration -= hoursRemaining;
+            hoursRemaining = 0;
+        } else {
+            hoursRemaining -= item.duration;
+            item.duration = 0;
+            
+            addItemsToInventory(item.name, item.quantity);
+            g_game.recipeQueue.splice(0, 1);
+        }
+    }
+    
+    // Send parties out adventuring
+    $.each(g_game.parties, function (partyIndex, party) {
+        $.each(g_items, function (name, e) {
+            if (e.type == 'Resource') {
+                addItemsToPartyLoot(party, name, randomInt(0, 6));
+            }
+        });
+    });
+    
+    refreshUI();
+}
+
 function displayCurrency() {
     return `${g_game.currency} gp`;
 }
@@ -156,7 +200,7 @@ function displayRecipeQueue() {
         html += `<div class="recipe-queue-item" onclick="cancelRecipe(${i});" tabindex="0">
             <span class="item">${e.name} : ${e.quantity}</span> 
             <i class="fa fa-clock-o" aria-hidden="true"></i> 
-            ${e.duration} days
+            ${e.duration} hrs
         </div>`;
     });
     
@@ -194,7 +238,7 @@ function displayRecipeList() {
             <i class="fa fa-chevron-circle-right" aria-hidden="true"></i>
             <span class="recipe-result">${recipeResultHtml}</span>
             <i class="fa fa-clock-o" aria-hidden="true"></i>
-            ${recipe.duration} days
+            ${recipe.duration} hrs
         </div>`;
         if (haveComponents) {
             enabledRecipes += recipeHtml;
